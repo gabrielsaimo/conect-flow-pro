@@ -69,7 +69,7 @@ export function SettingsModal({ isOpen, onClose, template, onTemplateChange }: S
             ))}
           </div>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-3 italic">
-            💡 Dica: <strong>{{'{'}}{'{'}saudacao{'}'}}{'{'}}</strong> insere automaticamente "Bom dia", "Boa tarde" ou "Boa noite" baseado no horário atual.
+            💡 Dica: <strong>{'{{saudacao}}'}</strong> insere automaticamente "Bom dia", "Boa tarde" ou "Boa noite" baseado no horário atual.
           </p>
         </div>
       </Modal.Body>
