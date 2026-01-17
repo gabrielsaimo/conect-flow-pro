@@ -8,6 +8,23 @@ interface SettingsModalProps {
   onTemplateChange: (template: string) => void;
 }
 
+// Descrições das variáveis
+const VARIABLE_DESCRIPTIONS: Record<string, string> = {
+  '{{saudacao}}': 'Saudação automática (Bom dia/Boa tarde/Boa noite)',
+  '{{nome}}': 'Nome completo',
+  '{{p1nome}}': 'Primeiro nome',
+  '{{p2nome}}': 'Primeiro e segundo nome',
+  '{{email}}': 'E-mail',
+  '{{endereco}}': 'Endereço',
+  '{{id}}': 'ID do contato',
+  '{{nascimento}}': 'Data de nascimento',
+  '{{bonus1}}': 'Campo bônus 1',
+  '{{bonus2}}': 'Campo bônus 2',
+  '{{bonus3}}': 'Campo bônus 3',
+  '{{bonus4}}': 'Campo bônus 4',
+  '{{bonus5}}': 'Campo bônus 5',
+};
+
 export function SettingsModal({ isOpen, onClose, template, onTemplateChange }: SettingsModalProps) {
   const handleVariableClick = (variable: string) => {
     onTemplateChange(template + ' ' + variable);
@@ -45,11 +62,15 @@ export function SettingsModal({ isOpen, onClose, template, onTemplateChange }: S
                 key={tag}
                 onClick={() => handleVariableClick(tag)}
                 className="px-2 py-1 bg-white dark:bg-dark-bg text-gray-600 dark:text-gray-300 text-xs rounded border border-gray-200 dark:border-dark-border hover:border-brand-300 dark:hover:border-brand-500 hover:text-brand-600 dark:hover:text-brand-400 hover:bg-brand-50 dark:hover:bg-brand-900/20 transition-all font-mono"
+                title={VARIABLE_DESCRIPTIONS[tag]}
               >
                 {tag}
               </button>
             ))}
           </div>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-3 italic">
+            💡 Dica: <strong>{{'{'}}{'{'}saudacao{'}'}}{'{'}}</strong> insere automaticamente "Bom dia", "Boa tarde" ou "Boa noite" baseado no horário atual.
+          </p>
         </div>
       </Modal.Body>
 

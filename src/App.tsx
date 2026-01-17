@@ -203,6 +203,17 @@ function App() {
     }
   }, [activeContactForWhatsApp, toggleContactStatus]);
 
+  // Update contact comments
+  const handleUpdateComments = useCallback((internalId: number, comments: string) => {
+    setContacts(prev => 
+      prev.map(contact => 
+        contact.internalId === internalId 
+          ? { ...contact, comments }
+          : contact
+      )
+    );
+  }, [setContacts]);
+
   // Render based on step
   if (step === 'upload') {
     return (
@@ -238,6 +249,7 @@ function App() {
         onSearchChange={setSearchTerm}
         onToggleStatus={toggleContactStatus}
         onOpenWhatsApp={handleWhatsAppOpen}
+        onUpdateComments={handleUpdateComments}
         onEditMapping={editMapping}
         onExport={handleExport}
         onOpenSettings={() => setShowSettings(true)}

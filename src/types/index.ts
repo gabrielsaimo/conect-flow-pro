@@ -15,6 +15,7 @@ export interface Contact {
   bonus5?: string;
   contacted: boolean;
   lastContactedAt: string | null;
+  comments?: string;
 }
 
 export interface ColumnMapping {
@@ -73,7 +74,10 @@ export const MAPPING_FIELDS: MappingField[] = [
 ];
 
 export const TEMPLATE_VARIABLES = [
+  '{{saudacao}}',
   '{{nome}}',
+  '{{p1nome}}',
+  '{{p2nome}}',
   '{{email}}',
   '{{endereco}}',
   '{{id}}',
@@ -83,11 +87,9 @@ export const TEMPLATE_VARIABLES = [
   '{{bonus3}}',
   '{{bonus4}}',
   '{{bonus5}}',
-  '{{p1nome}}',
-  '{{p2nome}}',
 ] as const;
 
-export const DEFAULT_TEMPLATE = "Olá {{nome}}, tudo bem? Vi seu interesse em {{bonus1}}.";
+export const DEFAULT_TEMPLATE = "{{saudacao}} {{p1nome}}, tudo bem? Vi seu interesse em {{bonus1}}.";
 
 export const STORAGE_KEY = 'contactFlowData_v3';
 

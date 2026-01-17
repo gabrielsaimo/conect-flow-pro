@@ -14,6 +14,7 @@ interface DashboardPageProps {
   onSearchChange: (term: string) => void;
   onToggleStatus: (internalId: number) => void;
   onOpenWhatsApp: (contact: Contact) => void;
+  onUpdateComments: (internalId: number, comments: string) => void;
   onEditMapping: () => void;
   onExport: () => void;
   onOpenSettings: () => void;
@@ -29,6 +30,7 @@ export function DashboardPage({
   onSearchChange,
   onToggleStatus,
   onOpenWhatsApp,
+  onUpdateComments,
   onEditMapping,
   onExport,
   onOpenSettings,
@@ -70,6 +72,7 @@ export function DashboardPage({
             contacts={filteredContacts}
             onToggleStatus={onToggleStatus}
             onOpenWhatsApp={onOpenWhatsApp}
+            onUpdateComments={onUpdateComments}
           />
         </div>
       </div>

@@ -17,10 +17,32 @@ function getFirstTwoNames(fullName: string): string {
 }
 
 /**
+ * Retorna a saudação apropriada baseada no horário atual
+ * 06:00 - 11:59: Bom dia
+ * 12:00 - 17:59: Boa tarde
+ * 18:00 - 05:59: Boa noite
+ */
+function getGreetingByTime(): string {
+  const hour = new Date().getHours();
+  
+  if (hour >= 6 && hour < 12) {
+    return 'Bom dia';
+  } else if (hour >= 12 && hour < 18) {
+    return 'Boa tarde';
+  } else {
+    return 'Boa noite';
+  }
+}
+
+/**
  * Interpola variáveis do template com dados do contato
  */
 export function interpolateMessage(template: string, contact: Contact): string {
   let msg = template;
+
+  // Variável dinâmica: saudação baseada no horário
+  const greeting = getGreetingByTime();
+  msg = msg.replace(/{{saudacao}}/gi, greeting);
 
   // Campos de nome parciais
   const firstName = getFirstName(contact.name);

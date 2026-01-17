@@ -1,5 +1,5 @@
 import { memo, useState, useCallback, useMemo } from 'react';
-import { Check, Mail, MessageCircle, Inbox, ChevronLeft, ChevronRight, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
+import { Check, Mail, MessageCircle, Phone, Inbox, ChevronLeft, ChevronRight, ArrowUpDown, ArrowUp, ArrowDown, Edit2, Save, X } from 'lucide-react';
 import type { Contact } from '../../types';
 
 const ITEMS_PER_PAGE = 50;
@@ -11,9 +11,10 @@ interface ContactTableProps {
   contacts: Contact[];
   onToggleStatus: (internalId: number) => void;
   onOpenWhatsApp: (contact: Contact) => void;
+  onUpdateComments: (internalId: number, comments: string) => void;
 }
 
-export function ContactTable({ contacts, onToggleStatus, onOpenWhatsApp }: ContactTableProps) {
+export function ContactTable({ contacts, onToggleStatus, onOpenWhatsApp, onUpdateComments }: ContactTableProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const [sortField, setSortField] = useState<SortField>(null);
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
@@ -114,7 +115,8 @@ export function ContactTable({ contacts, onToggleStatus, onOpenWhatsApp }: Conta
               <th className="p-4">
                 <SortButton field="address">Endereço</SortButton>
               </th>
-              <th className="p-4 text-right">Ação</th>
+              <th className="p-4">Comentários</th>
+              <th className="p-4 text-right">Ações</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100 dark:divide-dark-border">
@@ -124,6 +126,7 @@ export function ContactTable({ contacts, onToggleStatus, onOpenWhatsApp }: Conta
                 contact={contact}
                 onToggleStatus={onToggleStatus}
                 onOpenWhatsApp={onOpenWhatsApp}
+                onUpdateComments={onUpdateComments}
               />
             ))}
           </tbody>
@@ -165,10 +168,14 @@ interface ContactRowProps {
   contact: Contact;
   onToggleStatus: (internalId: number) => void;
   onOpenWhatsApp: (contact: Contact) => void;
+  onUpdateComments: (internalId: number, comments: string) => void;
 }
 
 // Memoizar a linha para evitar re-renders desnecessários
-const ContactRow = memo(function ContactRow({ contact, onToggleStatus, onOpenWhatsApp }: ContactRowProps) {
+const ContactRow = memo(function ContactRow({ contact, onToggleStatus, onOpenWhatsApp, onUpdateComments }: ContactRowProps) {
+  const [isEditingComments, setIsEditingComments] = useState(false);
+  const [commentsText, setCommentsText] = useState(contact.comments || '');
+  
   const bonusFields = useMemo(() => 
     [1, 2, 3, 4, 5]
       .map((i) => contact[`bonus${i}` as keyof Contact])
@@ -183,6 +190,22 @@ const ContactRow = memo(function ContactRow({ contact, onToggleStatus, onOpenWha
   const handleWhatsApp = useCallback(() => {
     onOpenWhatsApp(contact);
   }, [onOpenWhatsApp, contact]);
+  
+  const handleCall = useCallback(() => {
+    if (contact.phones.length > 0) {
+      window.open(`tel:${contact.phones[0]}`, '_self');
+    }
+  }, [contact.phones]);
+  
+  const handleSaveComments = useCallback(() => {
+    onUpdateComments(contact.internalId, commentsText);
+    setIsEditingComments(false);
+  }, [onUpdateComments, contact.internalId, commentsText]);
+  
+  const handleCancelComments = useCallback(() => {
+    setCommentsText(contact.comments || '');
+    setIsEditingComments(false);
+  }, [contact.comments]);
 
   return (
     <tr className={`group hover:bg-gray-50 dark:hover:bg-dark-hover ${contact.contacted ? 'bg-gray-50/50 dark:bg-dark-bg/50' : ''}`}>
@@ -252,15 +275,70 @@ const ContactRow = memo(function ContactRow({ contact, onToggleStatus, onOpenWha
         </span>
       </td>
 
-      {/* WhatsApp Action */}
+      {/* Comments */}
+      <td className="p-4">
+        {isEditingComments ? (
+          <div className="flex items-center gap-2">
+            <textarea
+              value={commentsText}
+              onChange={(e) => setCommentsText(e.target.value)}
+              className="flex-1 text-sm border border-gray-300 dark:border-dark-border bg-white dark:bg-dark-bg text-gray-900 dark:text-white rounded px-2 py-1 min-h-[60px] resize-none"
+              placeholder="Adicione comentários..."
+            />
+            <div className="flex flex-col gap-1">
+              <button
+                onClick={handleSaveComments}
+                className="p-1 text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300"
+                title="Salvar"
+              >
+                <Save size={16} />
+              </button>
+              <button
+                onClick={handleCancelComments}
+                className="p-1 text-gray-600 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+                title="Cancelar"
+              >
+                <X size={16} />
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="flex items-start gap-2">
+            <span className="text-sm text-gray-600 dark:text-gray-400 flex-1 min-w-0 max-w-xs">
+              {contact.comments || '-'}
+            </span>
+            <button
+              onClick={() => setIsEditingComments(true)}
+              className="p-1 text-brand-600 hover:text-brand-700 dark:text-brand-400 dark:hover:text-brand-300 flex-shrink-0"
+              title="Editar comentários"
+            >
+              <Edit2 size={14} />
+            </button>
+          </div>
+        )}
+      </td>
+
+      {/* Actions */}
       <td className="p-4 text-right">
-        <button
-          onClick={handleWhatsApp}
-          className="inline-flex items-center gap-2 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-800 hover:bg-whatsapp hover:text-white hover:border-whatsapp px-4 py-2 rounded-lg font-medium text-sm shadow-sm"
-        >
-          <MessageCircle size={18} />
-          WhatsApp
-        </button>
+        <div className="flex items-center justify-end gap-2">
+          <button
+            onClick={handleWhatsApp}
+            className="inline-flex items-center gap-2 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-800 hover:bg-whatsapp hover:text-white hover:border-whatsapp px-3 py-2 rounded-lg font-medium text-sm shadow-sm"
+            title="Abrir WhatsApp"
+          >
+            <MessageCircle size={16} />
+            WhatsApp
+          </button>
+          <button
+            onClick={handleCall}
+            disabled={contact.phones.length === 0}
+            className="inline-flex items-center gap-2 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800 hover:bg-blue-600 hover:text-white hover:border-blue-600 px-3 py-2 rounded-lg font-medium text-sm shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+            title="Fazer ligação"
+          >
+            <Phone size={16} />
+            Ligar
+          </button>
+        </div>
       </td>
     </tr>
   );

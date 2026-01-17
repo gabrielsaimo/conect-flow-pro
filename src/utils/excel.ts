@@ -86,6 +86,7 @@ export function processExportedFile(
       bonus5: (getVal(row, 'Bonus5') as string) || undefined,
       contacted,
       lastContactedAt,
+      comments: (getVal(row, 'Comentarios') as string) || undefined,
     };
   });
 
@@ -158,6 +159,7 @@ export function processRawDataToContacts(
       bonus5: getVal(row, 'bonus5') as string | undefined,
       contacted: false,
       lastContactedAt: null,
+      comments: undefined,
     };
   });
 
@@ -182,6 +184,7 @@ export function exportContactsToExcel(
     Telefones: c.phones.join(', '),
     Status: c.contacted ? 'Contatado' : 'Pendente',
     Data_Contato: c.lastContactedAt ? new Date(c.lastContactedAt).toLocaleString('pt-BR') : '',
+    Comentarios: c.comments || '',
     Bonus1: c.bonus1 || '',
     Bonus2: c.bonus2 || '',
     Bonus3: c.bonus3 || '',
